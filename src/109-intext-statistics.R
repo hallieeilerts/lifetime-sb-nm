@@ -7,17 +7,9 @@
 # load data
 ltr2023 <- read_csv(here::here("gen", "lt-timing.csv"))
 
-# Round results: 2 dp
-ltr2023 <- ltr %>%
-  filter(year == 2023) %>%
-  mutate(
-    across(where(is.numeric), ~ round(.x, 2))
-  )
-
 # Country-level: LT-SB
-ltr2023 %>% slice_min(ltr.stb.percent, n = 1) %>% select(country, ltr.stb.percent)
-
-ltr2023 %>% slice_max(ltr.stb.percent, n = 1) %>% select(country, ltr.stb.percent)
+ltr2023 %>% slice_min(ltr.stb.percent, n = 1) %>% select(country, ltr.stb.percent, ltr.stb.per.lower, ltr.stb.per.upper)
+ltr2023 %>% slice_max(ltr.stb.percent, n = 1) %>% select(country, ltr.stb.percent, ltr.stb.per.lower, ltr.stb.per.upper)
 
 highest_ltsb <- ltr2023 %>%
   filter(ltr.stb.percent > 10) %>%
@@ -26,8 +18,8 @@ nrow(highest_ltsb)
 highest_ltsb$country    
 
 # Country-level: LT-NM 
-ltr2023 %>% slice_min(ltr.nmr.percent, n = 1) %>% select(country, ltr.nmr.percent)
-ltr2023 %>% slice_max(ltr.nmr.percent, n = 1) %>% select(country, ltr.nmr.percent)
+ltr2023 %>% slice_min(ltr.nmr.percent, n = 1) %>% select(country, ltr.nmr.percent, ltr.nmr.per.lower, ltr.nmr.per.upper)
+ltr2023 %>% slice_max(ltr.nmr.percent, n = 1) %>% select(country, ltr.nmr.percent, ltr.nmr.per.lower, ltr.nmr.per.upper)
 
 highest_ltnm <- ltr2023 %>%
   filter(ltr.nmr.percent > 10) %>%
