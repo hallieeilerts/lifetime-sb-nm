@@ -175,13 +175,16 @@ write_csv(country_het, here::here("gen", "lt-het-country.csv"))
 
 country_results_2023 <- subset(country_results, year == 2023)
 
+fn_dynamic_round <- function(x) ifelse(abs(x) < 1, round(x, 2), round(x, 1))
+fn_dynamic_fmt <- function(x) ifelse(abs(x) < 1, sprintf("%.2f", x), sprintf("%.1f", x))
+
 gt_tblS2 <- country_results_2023 %>%
   filter(year == 2023) %>% 
   arrange(region, country) %>% 
   mutate(
-    across(c(tfr, stb.rate, ltr.stb.percent, ltr.stb.per.lower, ltr.stb.per.upper,
-             nmr.rate, ltr.nmr.percent, ltr.nmr.per.lower, ltr.nmr.per.upper,
-             ltr.loss.percent, prop.stb), round, 1),
+    across(c(ltr.stb.percent, ltr.stb.per.lower, ltr.stb.per.upper,
+             ltr.nmr.percent, ltr.nmr.per.lower, ltr.nmr.per.upper,
+             ltr.loss.percent, prop.stb), fn_dynamic_round),
     
     ltr.stb.display = paste0(
       ltr.stb.percent, " (",
@@ -197,6 +200,10 @@ gt_tblS2 <- country_results_2023 %>%
   ) %>% 
   select(region, country, tfr, stb.rate, ltr.stb.display,
          nmr.rate, ltr.nmr.display, ltr.loss.percent, prop.stb) %>% 
+  mutate(nmr.rate = fn_dynamic_fmt(nmr.rate), # convert to character before gt()
+         tfr = fn_dynamic_fmt(tfr),
+         ltr.loss.percent = fn_dynamic_fmt(ltr.loss.percent),
+         prop.stb = fn_dynamic_fmt(prop.stb)) %>%
   gt(groupname_col = "region") %>%
   tab_header(title = "Global Estimates of Lifetime Stillbirths and Neonatal Deaths, 2023") %>% 
   cols_label(
@@ -212,4 +219,4 @@ gt_tblS2 <- country_results_2023 %>%
   ) %>% 
   tab_options(row_group.as_column = TRUE, table.font.size = 14)
 
-gtsave(gt_tblS2, here::here("gen/tables", "table-S2_country-lt-results.docx"))
+gtsave(gt_tblS2, here::here("gen/tables", "table-S2_country-lt-results2.docx"))
